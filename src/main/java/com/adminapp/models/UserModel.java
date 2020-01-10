@@ -1,19 +1,20 @@
 package com.adminapp.models;
 
 import lombok.Data;
+import org.hibernate.annotations.GeneratorType;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Data
-public class User {
+@Table(name = "users")
+public class UserModel {
     @Id
     @Column(name = "iduser")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer idUser;
 
     @Column(name = "username")
@@ -22,14 +23,16 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "estatus")
-    private String estatus;
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "created")
     @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     @Column(name = "updated")
     @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 }
