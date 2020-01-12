@@ -9,24 +9,21 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "users")
-public class UserModel extends Audit{
+@Table(name = "roles")
+public class RolModel extends Audit{
     @Id
-    @Column(name = "iduser")
+    @Column(name = "idrol")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Integer idUser;
+    private Integer idRol;
 
-    @Column(name = "username")
-    private String userName;
-
-    @Column(name = "email")
-    private String email;
+    @Column(name = "rolname")
+    private String rolName;
 
     @Column(name = "status")
     private String status;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "rol")
     @JsonManagedReference
-    private List<UserRoleModel> roles;
+    private List<UserRoleModel> users;
 
 }

@@ -1,6 +1,8 @@
 package com.adminapp.controllers;
 
+import com.adminapp.dtos.UserRolDto;
 import com.adminapp.models.UserModel;
+import com.adminapp.models.UserRoleModel;
 import com.adminapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,16 @@ public class UserController {
     @PostMapping("newUser")
     public ResponseEntity newUser(@RequestBody UserModel user){
         return userService.newUser(user);
+    }
+
+    @GetMapping("getUsersRoles")
+    public ResponseEntity getUsersRoles(){
+        return userService.getUsersRoles();
+    }
+
+    @PostMapping("newUserRole")
+    public ResponseEntity newUserRole(@RequestBody UserRolDto userRole){
+        return userService.newUserRole(userRole);
     }
 
 }
