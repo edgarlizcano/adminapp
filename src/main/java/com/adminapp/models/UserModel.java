@@ -19,6 +19,9 @@ public class UserModel extends Audit{
     @Column(name = "username")
     private String userName;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "email")
     private String email;
 

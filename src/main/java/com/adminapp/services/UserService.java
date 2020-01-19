@@ -1,5 +1,6 @@
 package com.adminapp.services;
 
+import com.adminapp.dtos.AuthenticationRequest;
 import com.adminapp.dtos.UserRolDto;
 import com.adminapp.models.RolModel;
 import com.adminapp.models.UserModel;
@@ -8,19 +9,27 @@ import com.adminapp.models.UserRolePkModel;
 import com.adminapp.repositories.RolRepository;
 import com.adminapp.repositories.UserRepository;
 import com.adminapp.repositories.UserRolRepository;
+import com.adminapp.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -30,6 +39,17 @@ public class UserService {
 
     @Autowired
     private UserRolRepository userRolRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<UserModel> optUser = userRepository.findByUserName(username);
+        if(optUser.isPresent()){
+            UserModel user = optUser.get();
+            UserDetails userDetail = new User(user.getUserName(),user.getPassword(), new ArrayList<>());
+            return  userDetail;
+        }
+        return null;
+    }
 
     public ResponseEntity getUsers(){
         List<UserModel> listUser = userRepository.findAll();
@@ -73,5 +93,6 @@ public class UserService {
                 .status(HttpStatus.CREATED)
                 .body(newUserModel);
     }
+
 
 }
