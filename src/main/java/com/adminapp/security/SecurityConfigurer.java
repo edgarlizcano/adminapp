@@ -24,6 +24,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtSecurityFilter jwtSecurityFilter;
 
+    @Autowired
+    private AuthenticationHandlerException handlerException;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(authenticationService).passwordEncoder(passwordEncoder());
@@ -38,10 +41,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(handlerException).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .antMatchers("/users/**").hasAnyAuthority("ADMIN", "BASIC")
+                .antMatchers("/roles/**").hasAuthority("BASIC")
+                .anyRequest().authenticated();
         http.addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class);
         http.headers().cacheControl();
     }

@@ -14,6 +14,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -38,15 +42,18 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    /*@Autowired
+    PasswordEncoder passwordEncoder;*/
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UserModel> optUser = userRepository.findByUserName(username);
         if(optUser.isPresent()){
             UserModel user = optUser.get();
-            UserDetails userDetail = new User(user.getUserName(),user.getPassword(), new ArrayList<>());
+            List<GrantedAuthority> authorities = user.getRoles().stream().map(item ->{
+                return new SimpleGrantedAuthority(item.getRol().getRolName());
+            }).collect(Collectors.toList());
+            UserDetails userDetail = new User(user.getUserName(),user.getPassword(), authorities);
             return  userDetail;
         }
         return null;
